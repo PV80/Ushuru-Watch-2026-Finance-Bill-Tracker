@@ -283,19 +283,31 @@ export default function UshuruApp() {
           <div>
             <h4>{t.footBillH}</h4>
             <ul>
-              <li><a href="#">{t.footBill1}</a></li>
-              <li><a href="#">{t.footBill2}</a></li>
-              <li><a href="#">{t.footBill3}</a></li>
-              <li><a href="#">{t.footBill4}</a></li>
+              {t.footLinks.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    {...(link.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
           <div>
             <h4>{t.footProjH}</h4>
             <ul>
-              <li><a href="#">{t.footProj1}</a></li>
-              <li><a href="#">{t.footProj2}</a></li>
-              <li><a href="#">{t.footProj3}</a></li>
-              <li><a href="#">{t.footProj4}</a></li>
+              {t.footProjLinks.map((link) => (
+                <li key={link.label}>
+                  <a
+                    href={link.href}
+                    {...(link.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

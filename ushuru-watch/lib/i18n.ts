@@ -86,14 +86,8 @@ export interface I18NStrings {
   footAbout: string;
   footBillH: string;
   footProjH: string;
-  footBill1: string;
-  footBill2: string;
-  footBill3: string;
-  footBill4: string;
-  footProj1: string;
-  footProj2: string;
-  footProj3: string;
-  footProj4: string;
+  footLinks: { label: string; href: string; external?: boolean }[];
+  footProjLinks: { label: string; href: string; external?: boolean }[];
   footBottomL: string;
   footBottomR: string;
 
@@ -237,14 +231,18 @@ export const I18N: Record<Lang, I18NStrings> = {
       "Built by independent volunteers from the Kenyan tech community. Open-source. Not affiliated with KRA, the Treasury, or any political party. Calculations use the gazetted draft of 30 April 2026.",
     footBillH: "Bill",
     footProjH: "Project",
-    footBill1: "Read the Bill (PDF)",
-    footBill2: "Section index",
-    footBill3: "Methodology",
-    footBill4: "Treasury memo",
-    footProj1: "Source code",
-    footProj2: "Privacy",
-    footProj3: "Press kit",
-    footProj4: "Contact",
+    footLinks: [
+      { label: "Read the Bill (PDF)", href: "/Finance-Bill-2026.pdf", external: true },
+      { label: "Section index", href: "#calc" },
+      { label: "Parliament of Kenya", href: "http://www.parliament.go.ke", external: true },
+      { label: "The National Treasury", href: "https://www.treasury.go.ke", external: true },
+    ],
+    footProjLinks: [
+      { label: "Source code", href: "https://github.com/PV80/Ushuru-Watch-2026-Finance-Bill-Tracker", external: true },
+      { label: "Kenya Revenue Authority", href: "https://www.kra.go.ke", external: true },
+      { label: "Kenya Law", href: "http://kenyalaw.org", external: true },
+      { label: "Contact the Clerk", href: "mailto:cna@parliament.go.ke", external: true },
+    ],
     footBottomL: "© 2026 USHURU WATCH · HARAMBEE",
     footBottomR: "BUILT IN NAIROBI",
 
@@ -347,14 +345,18 @@ export const I18N: Record<Lang, I18NStrings> = {
       "Imejengwa na wajitolea kutoka jamii ya teknolojia ya Kenya. Chanzo wazi. Hakihusiani na KRA, Hazina, au chama chochote cha kisiasa. Hesabu zinatumia rasimu iliyochapishwa tarehe 30 Aprili 2026.",
     footBillH: "Mswada",
     footProjH: "Mradi",
-    footBill1: "Soma Mswada (PDF)",
-    footBill2: "Faharasa ya vifungu",
-    footBill3: "Mbinu",
-    footBill4: "Kumbukumbu ya Hazina",
-    footProj1: "Msimbo",
-    footProj2: "Faragha",
-    footProj3: "Vyombo vya habari",
-    footProj4: "Wasiliana",
+    footLinks: [
+      { label: "Soma Mswada (PDF)", href: "/Finance-Bill-2026.pdf", external: true },
+      { label: "Faharasa ya vifungu", href: "#calc" },
+      { label: "Bunge la Kenya", href: "http://www.parliament.go.ke", external: true },
+      { label: "Hazina ya Taifa", href: "https://www.treasury.go.ke", external: true },
+    ],
+    footProjLinks: [
+      { label: "Msimbo wa chanzo", href: "https://github.com/PV80/Ushuru-Watch-2026-Finance-Bill-Tracker", external: true },
+      { label: "Mamlaka ya Mapato Kenya", href: "https://www.kra.go.ke", external: true },
+      { label: "Sheria za Kenya", href: "http://kenyalaw.org", external: true },
+      { label: "Wasiliana na Karani", href: "mailto:cna@parliament.go.ke", external: true },
+    ],
     footBottomL: "© 2026 USHURU WATCH · HARAMBEE",
     footBottomR: "IMEJENGWA NAIROBI",
 
