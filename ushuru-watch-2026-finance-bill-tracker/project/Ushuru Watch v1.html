@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ushuru Watch · Finance Bill 2026 Personal Impact Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
+<link rel="stylesheet" href="app/styles.css" />
+
+<style>
+  /* Page chrome (host viewport — outside the app) */
+  html, body { height: 100%; }
+  body {
+    background: #EFECE5;
+    overflow-x: hidden;
+  }
+
+  /* Stage holds the prototype + optional phone frame */
+  .stage {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Full-bleed mode: prototype takes the viewport */
+  .stage[data-view="desktop"] .stage-inner {
+    background: var(--uw-bg, #FAFAFA);
+    min-height: 100vh;
+  }
+  .stage[data-view="mobile"] {
+    background: #EFECE5;
+    padding: 32px 16px 60px;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .stage[data-view="mobile"] .stage-inner {
+    width: 402px; max-width: 100%;
+    height: 860px;
+    border-radius: 48px;
+    overflow: hidden;
+    position: relative;
+    background: var(--uw-bg, #FAFAFA);
+    box-shadow:
+      0 0 0 12px #0A0A0A,
+      0 0 0 13px #2a2a2a,
+      0 50px 100px -30px rgba(0,0,0,0.5),
+      0 30px 60px -30px rgba(0,0,0,0.35);
+  }
+  /* Notch */
+  .stage[data-view="mobile"] .stage-inner::before {
+    content: "";
+    position: absolute;
+    top: 11px; left: 50%; transform: translateX(-50%);
+    width: 126px; height: 37px; border-radius: 24px; background: #000; z-index: 90;
+  }
+  /* Status bar */
+  .stage[data-view="mobile"] .stage-inner::after {
+    content: "9:41 • • • •";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 54px;
+    padding: 18px 38px 0;
+    display: flex; justify-content: space-between;
+    font: 600 14px/1 -apple-system,system-ui;
+    color: var(--uw-fg,#0A0A0A);
+    z-index: 85;
+    pointer-events: none;
+  }
+  .stage[data-view="mobile"] .uw-app {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 54px;
+    scroll-behavior: smooth;
+  }
+  /* Hide host scrollbars on mobile frame */
+  .stage[data-view="mobile"] .uw-app::-webkit-scrollbar { display: none; }
+  .stage[data-view="mobile"] .uw-app { scrollbar-width: none; }
+  /* Constrain fixed-position elements to the phone */
+  .stage[data-view="mobile"] .uw-fab,
+  .stage[data-view="mobile"] .uw-chat {
+    position: absolute;
+  }
+
+  /* Frame badge for mobile view */
+  .stage[data-view="mobile"] .frame-label {
+    margin: 20px 0 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: #6B6B6B;
+    text-transform: uppercase;
+  }
+
+  /* Hide on desktop view */
+  .stage[data-view="desktop"] .frame-label { display: none; }
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script src="app/i18n.js"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="app/components.jsx"></script>
+<script type="text/babel" src="app/app.jsx"></script>
+
+<script type="text/babel">
+  const { useState, useEffect, useMemo } = React;
+  const { TweaksPanel, TweakSection, TweakRadio, TweakColor, TweakToggle, useTweaks } = window;
+
+  const DEFAULTS = /*EDITMODE-BEGIN*/{
+    "view": "auto",
+    "lang": "en",
+    "accent": "forest",
+    "showChat": true
+  }/*EDITMODE-END*/;
+
+  // Accent palettes — three civic options
+  const PALETTES = {
+    forest:   { green: "#1B3A2F", green2: "#244C3E", red: "#C8102E" },
+    sahara:   { green: "#2E3D2F", green2: "#3A4A3B", red: "#B5481E" },
+    midnight: { green: "#1A1A2E", green2: "#262640", red: "#D62828" },
+  };
+
+  function App() {
+    const [t, setTweak] = useTweaks(DEFAULTS);
+    const [vw, setVw] = useState(typeof window !== "undefined" ? window.innerWidth : 1280);
+
+    useEffect(() => {
+      const onResize = () => setVw(window.innerWidth);
+      window.addEventListener("resize", onResize);
+      return () => window.removeEventListener("resize", onResize);
+    }, []);
+
+    const view =
+      t.view === "auto" ? (vw < 820 ? "mobile" : "desktop") : t.view;
+
+    const mode = view === "mobile" ? "mobile" : "desktop";
+
+    // Apply accent palette as CSS vars on document root
+    useEffect(() => {
+      const p = PALETTES[t.accent] || PALETTES.forest;
+      const r = document.documentElement.style;
+      r.setProperty("--uw-green", p.green);
+      r.setProperty("--uw-green-2", p.green2);
+      r.setProperty("--uw-red", p.red);
+    }, [t.accent]);
+
+    return (
+      <>
+        <div className="stage" data-view={view}>
+          <div className="stage-inner">
+            <UshuruApp initialLang={t.lang} mode={mode} key={t.lang + mode + t.accent} />
+          </div>
+          {view === "mobile" && (
+            <div className="frame-label">PROTOTYPE · WhatsApp-opened mobile view (90% of traffic)</div>
+          )}
+        </div>
+
+        <TweaksPanel title="Tweaks">
+          <TweakSection label="Viewport">
+            <TweakRadio
+              label="View"
+              value={t.view}
+              onChange={(v) => setTweak("view", v)}
+              options={[
+                { value: "auto", label: "Auto" },
+                { value: "mobile", label: "Mobile" },
+                { value: "desktop", label: "Desktop" },
+              ]}
+            />
+            <TweakRadio
+              label="Language"
+              value={t.lang}
+              onChange={(v) => setTweak("lang", v)}
+              options={[
+                { value: "en", label: "ENG" },
+                { value: "sw", label: "SWA" },
+              ]}
+            />
+          </TweakSection>
+          <TweakSection label="Theme">
+            <TweakRadio
+              label="Accent palette"
+              value={t.accent}
+              onChange={(v) => setTweak("accent", v)}
+              options={[
+                { value: "forest", label: "Forest" },
+                { value: "sahara", label: "Sahara" },
+                { value: "midnight", label: "Midnight" },
+              ]}
+            />
+          </TweakSection>
+          <TweakSection label="Features">
+            <TweakToggle
+              label="Show chat FAB"
+              value={t.showChat}
+              onChange={(v) => setTweak("showChat", v)}
+            />
+          </TweakSection>
+        </TweaksPanel>
+
+        {!t.showChat && (
+          <style>{`.uw-fab, .uw-chat { display: none !important; }`}</style>
+        )}
+      </>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+
+</body>
+</html>
